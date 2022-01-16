@@ -12,7 +12,7 @@ object Repository {
 
     private val unsplashApiService: UnsplashApiService by lazy {
         Retrofit.Builder()
-            .baseUrl(Url.UNSPLAH_BASE_URL)
+            .baseUrl(Url.UNSPLASH_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(buildOkHttpClient())
             .build()

@@ -29,11 +29,21 @@ class PhotoAdapter : RecyclerView.Adapter<PhotoAdapter.ViewHolder>(){
 
     override fun getItemCount(): Int = photos.size
 
-    class ViewHolder(
+    inner class ViewHolder(
         private  val binding: ItemPhotoBinding
     ): RecyclerView.ViewHolder(binding.root){
 
         fun bind(photo: PhotoResponse){
+            val dimensionRatio = photo.height/photo.width.toFloat()
+            val targetWidth = binding.root.resources.displayMetrics.widthPixels -
+                    (binding.root.paddingStart + binding.root.paddingEnd)
+
+            val targetHeight = (targetWidth * dimensionRatio).toInt()
+
+            binding.contentsContainer.layoutParams =
+                binding.contentsContainer.layoutParams.apply {
+                    height = targetHeight
+                }
             Glide.with(binding.root)
                 .load(photo.urls?.regular)
                 .into(binding.photoImageView)
@@ -42,22 +52,22 @@ class PhotoAdapter : RecyclerView.Adapter<PhotoAdapter.ViewHolder>(){
             Glide.with(binding.root)
                 .load(photo.user?.profileImageUrls?.small)
                 .into(binding.profileImageView)
-            if (photo.user?.name.isNullOrBlank()){
-                    binding.authorTextView.visibility = View.GONE
-            }else{
+
+            if(photo.user?.name.isNullOrBlank()) {
+                binding.authorTextView.visibility = View.GONE
+            } else {
                 binding.authorTextView.visibility = View.VISIBLE
                 binding.authorTextView.text = photo.user?.name
-
             }
-            if (photo.description.isNullOrBlank()){
+
+            if(photo.description.isNullOrBlank()) {
                 binding.descriptionTextView.visibility = View.GONE
-            } else{
+            } else {
                 binding.descriptionTextView.visibility = View.VISIBLE
-
+                binding.descriptionTextView.text = photo.description
             }
-            binding.descriptionTextView.text= photo.description
-        }
 
+        }
 
     }
 

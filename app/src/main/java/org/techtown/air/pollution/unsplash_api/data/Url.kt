@@ -1,5 +1,5 @@
 package org.techtown.air.pollution.unsplash_api.data
 
 object Url {
-    const val UNSPLAH_BASE_URL = "https://api.unsplash.com/"
+    const val UNSPLASH_BASE_URL = "https://api.unsplash.com/"
 }

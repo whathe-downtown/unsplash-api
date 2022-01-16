@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
+        initViews()
         fetchRandomPhotos()
     }
 
@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         scope.cancel()
     }
-    private  fun initView(){
+    private fun initViews() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         binding.recyclerView.adapter = PhotoAdapter()
     }
