@@ -1,6 +1,7 @@
 package org.techtown.air.pollution.unsplash_api
 
 import android.Manifest
+import android.app.WallpaperManager
 import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
@@ -144,31 +145,52 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private  fun downloadPhoto(photoUrl: String?){
+    private fun downloadPhoto(photoUrl: String?) {
         photoUrl ?: return
-
 
         Glide.with(this)
             .asBitmap()
             .load(photoUrl)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .into(
-                object : CustomTarget<Bitmap>(SIZE_ORIGINAL, SIZE_ORIGINAL){
+                object: CustomTarget<Bitmap>(SIZE_ORIGINAL, SIZE_ORIGINAL) {
+
                     override fun onResourceReady(
                         resource: Bitmap,
                         transition: Transition<in Bitmap>?
                     ) {
                         saveBitmapToMediaStore(resource)
+
+                        val wallpaperManager = WallpaperManager.getInstance(this@MainActivity)
+                        val snackbar = Snackbar.make(
+                            binding.root,
+                            "다운로드 완료",
+                            Snackbar.LENGTH_SHORT
+                        )
+
+                        if(wallpaperManager.isWallpaperSupported
+                            && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                                    && wallpaperManager.isSetWallpaperAllowed)) {
+                            snackbar.setAction("배경 화면으로 저장") {
+                                try {
+                                    wallpaperManager.setBitmap(resource)
+                                } catch (exception: Exception) {
+                                    Snackbar.make(binding.root, "배경화면 저장 실패", Snackbar.LENGTH_SHORT)
+                                }
+                            }
+                            snackbar.duration = Snackbar.LENGTH_INDEFINITE
+                        }
+
+                        snackbar.show()
                     }
 
                     override fun onLoadStarted(placeholder: Drawable?) {
                         super.onLoadStarted(placeholder)
                         Snackbar.make(
                             binding.root,
-                            "downloading now ...",
+                            "다운로드 중...",
                             Snackbar.LENGTH_INDEFINITE
                         ).show()
-
                     }
 
                     override fun onLoadFailed(errorDrawable: Drawable?) {
@@ -224,7 +246,6 @@ class MainActivity : AppCompatActivity() {
             resolver.update(imageUri, imageDetails, null, null)
         }
 
-        Snackbar.make(binding.root, "download success", Snackbar.LENGTH_SHORT).show()
     }
     companion object{
         private const val REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION =  101
